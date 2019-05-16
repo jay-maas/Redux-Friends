@@ -40,7 +40,7 @@ class Login extends React.Component {
                         onChange={this.handleChange}
                     />
                     <button>
-                        {this.props.isLoggingIn ? (
+                        {this.props.loggingIn ? (
                                 'Logging In....' 
                             ) : (
                                 'Log In'

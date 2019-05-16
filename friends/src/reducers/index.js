@@ -36,6 +36,8 @@ const reducer = (state = initialState, action) => {
                 logginIn: false,
                 error: ''
             }
+        default:
+            return state
     }
 }
 
