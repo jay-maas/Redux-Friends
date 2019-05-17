@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { login } from '../actions'
+import { withRouter } from 'react-router-dom'
 
 class Login extends React.Component {
     state= {
@@ -19,8 +20,10 @@ class Login extends React.Component {
     }
     login = e => {
         e.preventDefault()
-        this.props.login(this.state.credentials).then(() => {
-            this.props.history.push('/protected')
+        console.log(this.state.credentials)
+        this.props.login(this.state.credentials)
+            .then(() => {
+                this.props.history.push('/friends')
         })
     }
     render(){
@@ -40,23 +43,26 @@ class Login extends React.Component {
                         onChange={this.handleChange}
                     />
                     <button>
-                        {this.props.loggingIn ? (
-                                'Logging In....' 
-                            ) : (
+                        {this.props.loggingIn ? 
+                                this.props.error ? 
+                                    'Login' : 'Logging In....' 
+                             : 
                                 'Log In'
-                        )}
+                        }
                     </button>
                 </form>
+                {this.props.error && <p>{this.props.error}</p>}
             </>
         )
     }
 }
 
 const mapStateToProps = state => ({
-    loggingIn: state.loggingIn
+    loggingIn: state.loggingIn,
+    error: state.error
 })
 
 export default connect(
     mapStateToProps,
     { login }
-) (Login)
+) (withRouter(Login))

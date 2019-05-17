@@ -47,6 +47,21 @@ let friends = [
   }
 ];
 
+let registeredUsersNextId = 2;
+
+let registeredUsers = [
+  {
+    id: 1,
+    username: 'adminJay',
+    password: 'i<3Lambd4'
+  },
+  {
+    id: 2,
+    username: 'Jay',
+    password: 'test'
+  }
+];
+
 app.use(bodyParser.json());
 
 app.use(cors());
@@ -56,13 +71,13 @@ function authenticator(req, res, next) {
   if (authorization === token) {
     next();
   } else {
-    res.status(403).json({ error: 'User be logged in to do that.' });
+    res.status(403).json({ error: 'Please Log in or Register' });
   }
 }
 
 app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === 'Lambda School' && password === 'i<3Lambd4') {
+  const registeredUser = registeredUsers.find(user => user.username == req.body.username && user.password == req.body.password)
+  if (registeredUser) {
     req.loggedIn = true;
     res.status(200).json({
       payload: token
@@ -70,8 +85,31 @@ app.post('/api/login', (req, res) => {
   } else {
     res
       .status(403)
-      .json({ error: 'Username or Password incorrect. Please see Readme' });
+      .json({ error: 'Username or Password incorrect, or does not exist. Please try again, or register an account.' });
   }
+});
+
+app.post('/api/register', (req, res) => {
+  let passport = { ...req.body }
+  passport = { 
+    username: passport.username,
+    password: passport.password
+  }
+  let friend = { ...req.body }
+  friend = {
+    id: getNextId(),
+    name: friend.name,
+    age: friend.age,
+    email: friend.email
+  }
+  const registeredUser = { id: getNextUserId(), passport };
+
+  registeredUsers = [...registeredUsers, registeredUser];
+  friends = [ ...friends, friend]
+
+  res.status(200).json({
+    payload: token
+  });
 });
 
 app.get('/api/friends', authenticator, (req, res) => {
@@ -127,6 +165,10 @@ app.delete('/api/friends/:id', authenticator, (req, res) => {
 
 function getNextId() {
   return nextId + 1;
+}
+
+function getNextUserId() {
+  return registeredUsersNextId + 1;
 }
 
 app.listen(port, () => {
